@@ -3,7 +3,18 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Api Genesis Demonstration!</h1>
 
-Welcome to your new app.
-<GenerateStudents />
+<AuthorizeView>
+    <Authorized>
+        <GenerateStudents />
+    </Authorized>
+    <NotAuthorized>
+        <br />
+        Remember to run "Update-Database" in the console first to create the database.
+        <br />
+        Then create a fake account to test with for example "bob@bob.com"
+        <br />
+        <br />
+    </NotAuthorized>
+</AuthorizeView>
