@@ -1,0 +1,36 @@
+﻿@using StudentsRepository.Models.Students
+@using StudentsRepository.Services.Foundations.Students
+@using StudentsRepository.Components
+
+<h3>GenerateStudents</h3>
+@if (!working)
+{
+    <input type="number" @bind-value=inputQuantity min="0" max="25000" />
+    <button @onclick=CreateAsync>Create Random Students</button>
+}
+else
+{
+    <div>Working: @currenti</div>
+}
+@code {
+    private int inputQuantity = 25000;
+    private int currenti = 0;
+    bool working = false;
+    [Inject]
+    private IStudentService StudentService { get; set; } = null!;
+
+    private async Task CreateAsync()
+    {
+        working = true;
+        StudentFiller studentFiller = new StudentFiller();
+        for (int i = 0; i < this.inputQuantity; i++)
+        {
+            Student student = studentFiller.CreateStudent()!;
+            await StudentService.AddStudentAsync(student: student);
+            currenti = i;
+            if (i % 10 == 0) StateHasChanged();
+        }
+        working = false;
+        StateHasChanged();
+    }
+}

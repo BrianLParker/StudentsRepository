@@ -1,0 +1,53 @@
+﻿@page "/students"
+@rendermode InteractiveWebAssemblyNoPreRender
+<h3>Students</h3>
+<div class="col-6 mb-3">
+    <EditForm Model=@inputStudent OnValidSubmit=AddStudentAsync>
+        <DataAnnotationsValidator />
+        <div class="input-group">
+            <InputText @bind-Value=inputStudent.GivenName class="form-control" placeholder="Given Name" />
+            <InputText @bind-Value=inputStudent.FamilyName class="form-control" placeholder="Family Name" />
+            <button type="submit" class="btn btn-outline-primary btn-sm">Add</button>
+        </div>
+        <ValidationSummary />
+    </EditForm>
+</div>
+<div class="d-flex flex-row gap-2 border-bottom">
+    <div class="col-1 fw-bold">Id</div>
+    <div class="col-3 fw-bold">Given Name</div>
+    <div class="col-3 fw-bold">Family Name</div>
+    <div class="col-3 fw-bold">Controls</div>
+</div>
+<div style="max-height: 50vh;overflow-y: auto">
+
+    <Virtualize @ref=virtualize ItemsProvider=Students.StudentsProvider Context="student" OverscanCount="10">
+        <div class="d-flex flex-row gap-2">
+            <div class="col-1">@student.Id</div>
+            <div class="col-3">@student.GivenName</div>
+            <div class="col-3">@student.FamilyName</div>
+            <div class="col-3">
+                <button @onclick=@(async () => await DeleteStudentAsync(student)) class="btn btn-outline-danger btn-sm">Delete</button>
+            </div>
+        </div>
+    </Virtualize>
+</div>
+@code {
+    Virtualize<Student> virtualize = default!;
+    private Student inputStudent = new();
+
+    [Inject]
+    private IStudentService Students { get; set; } = default!;
+
+    private async Task AddStudentAsync()
+    {
+        await this.Students.AddStudentAsync(inputStudent);
+        inputStudent = new();
+        await virtualize.RefreshDataAsync();
+    }
+
+    private async Task DeleteStudentAsync(Student student)
+    {
+        await this.Students.RemoveStudentAsync(student.Id);
+        await virtualize.RefreshDataAsync();
+    }
+}
